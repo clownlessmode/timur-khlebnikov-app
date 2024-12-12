@@ -63,13 +63,7 @@ const AddBroadcast = () => {
         formData.append("images", file);
       });
     }
-    const formDataObj = Object.fromEntries(formData);
-    console.log("FormData as Object:", formDataObj);
 
-    // Вывод всех пар ключ-значение
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
     await createBroadcast(formData);
     closeModal();
   };

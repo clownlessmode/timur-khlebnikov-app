@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import MessagesService from "./messages.service";
 import { MarkMessagesAsReadDto } from "./dto/markAsRead.dto";
 
-export const useMessagesController = (id?: string) => {
+export const useMessagesController = () => {
   const queryClient = useQueryClient();
 
   // Запрос для получения всех пользователей

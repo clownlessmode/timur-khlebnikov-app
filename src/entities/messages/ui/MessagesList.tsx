@@ -26,7 +26,7 @@ const MessagesList = ({ data, isLoading, messages = [] }: Props) => {
 
   const allMessages = [...(data.messages || []), ...messages];
 
-  if (!data || allMessages.length === 0) {
+  if (!data || allMessages.length === 0 || isLoading) {
     return <NotFound />;
   }
 

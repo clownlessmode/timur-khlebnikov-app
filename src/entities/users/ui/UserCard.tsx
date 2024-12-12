@@ -27,6 +27,7 @@ import EditUser from "@/features/user/EditUser";
 import firstWords from "@/shared/utils/first-words";
 import { useUsersController } from "../users.controller";
 import Spinner from "@/shared/ui/Spinner";
+import Variant from "@/entities/messages/entities/variant.enum";
 
 interface Props {
   user: UserEntity;
@@ -41,7 +42,6 @@ export const UserCard = ({ user }: Props) => {
     username: user.telegram.username || "",
     name: user.name || "",
   }).toString();
-
   return (
     <div className="w-full bg-background rounded-md border p-2 gap-3">
       <button
@@ -52,7 +52,12 @@ export const UserCard = ({ user }: Props) => {
           <UserAvatar
             hash={user.id}
             status={user.hasBanned}
-            text={0}
+            text={
+              user.messages?.filter(
+                (message) =>
+                  !message.isRead && message.variant === Variant.INCOMING
+              ).length
+            }
             avatarText={firstWords(
               generateName({
                 first_name: user.telegram.first_name,
@@ -125,15 +130,18 @@ export const UserCard = ({ user }: Props) => {
                 />
               )}
             </div>
-            <div className="flex flex-row gap-2">
-              <Link href={`/chats/${user.id}?${searchParams}`}>
-                <Button>
-                  <Bot className="w-4 h-4" />
-                  Написать через бота
+            <div className="flex flex-row gap-2 w-full">
+              <Link
+                href={`/chats/${user.id}?${searchParams}`}
+                className="flex-1 overflow-hidden"
+              >
+                <Button className="w-full">
+                  <Bot className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="truncate">Бот</span>
                 </Button>
               </Link>
               <Button
-                className="w-full justify-center items-center"
+                className="flex-1 justify-center items-center overflow-hidden"
                 variant={"outline"}
                 onClick={() => contactUser({ id: user.id })}
               >
@@ -141,8 +149,8 @@ export const UserCard = ({ user }: Props) => {
                   <Spinner />
                 ) : (
                   <>
-                    <MessageCircle className="w-4 h-4" />
-                    Написать лично
+                    <MessageCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <span className="truncate">Лично</span>
                   </>
                 )}
               </Button>

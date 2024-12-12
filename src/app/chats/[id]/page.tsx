@@ -6,14 +6,16 @@ import Link from "next/link";
 import generateName from "@/shared/utils/generate-name";
 import { useSearchParams } from "next/navigation";
 import SendMessages from "@/features/messages/SendMessages";
-import { use } from "react";
+import { use, useEffect } from "react";
 import ScreenContainer from "@/shared/containers/ScreenContainer";
 import { useUsersController } from "@/entities/users/users.controller";
 import { UserEntity } from "@/entities/users/entities/user.entity";
 import MessagesList from "@/entities/messages/ui/MessagesList";
 import { useChatSocket } from "@/entities/messages/useChatSocket";
 import generateColor from "@/shared/utils/generate-color";
+import { useMessagesController } from "@/entities/messages/messages.controller";
 
+import { useMemo } from "react";
 export default function ChatPage({
   params,
 }: {
@@ -27,7 +29,32 @@ export default function ChatPage({
   const { id } = use(params);
 
   const { user, isUsersLoading } = useUsersController(id);
+  const { markAsRead } = useMessagesController();
   const { messages, sendMessage } = useChatSocket(id, id);
+
+  const unreadMessageIds = useMemo(() => {
+    return user?.messages
+      ? user.messages
+          .filter((message) => !message.isRead)
+          .map((message) => message.id)
+      : [];
+  }, [user?.messages]);
+
+  useEffect(() => {
+    const markUnreadMessages = async () => {
+      if (unreadMessageIds.length > 0) {
+        try {
+          await markAsRead({
+            data: { messageIds: unreadMessageIds },
+          });
+        } catch (error) {
+          console.error("Error marking messages as read:", error);
+        }
+      }
+    };
+
+    markUnreadMessages();
+  }, [unreadMessageIds]); // Эффект зависит только от мемоизированных данных
 
   return (
     <>

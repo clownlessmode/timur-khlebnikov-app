@@ -17,7 +17,30 @@ class BroadcastsService {
   static async createBroadcast(
     dto: CreateBroadcastDto
   ): Promise<BroadcastEntity> {
-    const response = await baseApi.post<BroadcastEntity>("/broadcasts", dto);
+    // const formData = new FormData();
+
+    // // Добавляем текстовые поля
+    // formData.append("name", dto.name);
+    // formData.append("message", dto.message);
+
+    // // Добавляем group ids
+    // dto.groupIds.forEach((groupId, index) => {
+    //   formData.append(`groupIds[${index}]`, groupId);
+    // });
+
+    // // Добавляем изображения, если есть
+    // if (dto.images) {
+    //   dto.images.forEach((image, index) => {
+    //     formData.append(`images`, image);
+    //   });
+    // }
+
+    const response = await baseApi.post<BroadcastEntity>("/broadcasts", dto, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
     return response.data;
   }
 

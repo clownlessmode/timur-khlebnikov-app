@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import InputField from "@/shared/ui/InputField";
 import { Button } from "@/shared/ui/button";
 import Modal from "@/shared/ui/Modal";
@@ -12,9 +12,11 @@ import { Badge } from "@/shared/ui/badge";
 import generateColor from "@/shared/utils/generate-color";
 import { CreateBroadcastDto } from "@/entities/broadcasts/dto/create-broadcast.dto";
 import { useBroadcastsController } from "@/entities/broadcasts/broadcasts.controller";
+import { Input } from "@/shared/ui/input";
 
 const AddBroadcast = () => {
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -25,7 +27,8 @@ const AddBroadcast = () => {
     defaultValues: {
       name: "",
       message: "",
-      groupIds: [], // Пустой список групп по умолчанию
+      groupIds: [],
+      images: [],
     },
   });
 
@@ -35,23 +38,40 @@ const AddBroadcast = () => {
   const [selectedGroups, setSelectedGroups] = useState<GroupEntity[]>([]); // Состояние выбранных групп
 
   const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    reset();
+    setSelectedGroups([]);
+  };
 
   useEffect(() => {
     setValue(
       "groupIds",
       selectedGroups.map((group) => group.id)
-    ); // Обновляем список групп в форме
+    );
   }, [selectedGroups, setValue]);
 
   const onSubmit: SubmitHandler<CreateBroadcastDto> = async (data) => {
-    const broadcastData: CreateBroadcastDto = {
-      ...data,
-      groupIds: selectedGroups.map((group) => group.id), // Передаем ID групп для рассылки
-    };
-    await createBroadcast(broadcastData); // Создаем рассылку с данными
-    reset(); // Сбросить форму после отправки
-    closeModal(); // Закрыть модальное окно
+    console.log("DATA: ", data);
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("message", data.message);
+    data.groupIds.forEach((id) => formData.append("groupIds", id));
+
+    if (data.images && data.images.length > 0) {
+      Array.from(data.images).forEach((file) => {
+        formData.append("images", file);
+      });
+    }
+    const formDataObj = Object.fromEntries(formData);
+    console.log("FormData as Object:", formDataObj);
+
+    // Вывод всех пар ключ-значение
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+    await createBroadcast(formData);
+    closeModal();
   };
 
   return (
@@ -87,31 +107,52 @@ const AddBroadcast = () => {
           {isGroupsLoading ? (
             <Spinner />
           ) : (
-            <Multiselector
-              direction="column"
-              initialItems={groups || []}
-              selectedItems={selectedGroups}
-              onItemSelect={(group) =>
-                setSelectedGroups([...selectedGroups, group])
-              }
-              onItemRemove={(group) =>
-                setSelectedGroups(
-                  selectedGroups.filter((g) => g.id !== group.id)
-                )
-              }
-              renderItem={(group) => (
-                <Badge
-                  key={group.id}
-                  style={{ backgroundColor: generateColor(group.id) }}
-                >
-                  {group.name}
-                </Badge>
+            <Controller
+              control={control}
+              name="groupIds"
+              render={() => (
+                <Multiselector
+                  direction="column"
+                  initialItems={groups || []}
+                  selectedItems={selectedGroups}
+                  onItemSelect={(group) =>
+                    setSelectedGroups([...selectedGroups, group])
+                  }
+                  onItemRemove={(group) =>
+                    setSelectedGroups(
+                      selectedGroups.filter((g) => g.id !== group.id)
+                    )
+                  }
+                  renderItem={(group) => (
+                    <Badge
+                      key={group.id}
+                      style={{ backgroundColor: generateColor(group.id) }}
+                    >
+                      {group.name}
+                    </Badge>
+                  )}
+                  selectedLabel="Выбранные группы"
+                  availableLabel="Доступные группы"
+                  emptySelectedMessage="Группы не выбраны"
+                />
               )}
-              selectedLabel="Выбранные группы"
-              availableLabel="Доступные группы"
-              emptySelectedMessage="Группы не выбраны"
             />
           )}
+
+          <Controller
+            control={control}
+            name="images"
+            render={({ field: { onChange } }) => (
+              <Input
+                className="h-13"
+                type="file"
+                multiple
+                onChange={(e) => {
+                  onChange(e.target.files);
+                }}
+              />
+            )}
+          />
 
           <Button type="submit" disabled={isCreatingBroadcast || !isValid}>
             {isCreatingBroadcast ? <Spinner /> : "Создать рассылку"}

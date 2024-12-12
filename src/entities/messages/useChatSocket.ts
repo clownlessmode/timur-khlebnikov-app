@@ -17,6 +17,7 @@ export function useChatSocket(userId: string, currentRoomId: string) {
           variant: message.variant || Variant.INCOMING,
           created_at: message.created_at || new Date().toISOString(),
           updated_at: message.updated_at || new Date().toISOString(),
+          isRead: true,
         };
 
         return [...prevMessages, normalizedMessage];
@@ -44,7 +45,6 @@ export function useChatSocket(userId: string, currentRoomId: string) {
 
     // Handle incoming messages
     newSocket.on("new", (message: any) => {
-      console.log("Received new message:", message);
       addMessage(message);
     });
 
@@ -81,5 +81,20 @@ export function useChatSocket(userId: string, currentRoomId: string) {
     }
   };
 
-  return { messages, sendMessage, socket };
+  const markMessageAsRead = (messageId: string) => {
+    if (socket) {
+      socket.emit("markAsRead", { messageId });
+    }
+  };
+
+  // Обновленная функция markMultipleMessages, использующая markMessageAsRead
+  const markMultipleMessages = (messageIds: string[]) => {
+    if (socket) {
+      messageIds.forEach((messageId) => {
+        markMessageAsRead(messageId);
+      });
+    }
+  };
+
+  return { messages, sendMessage, socket, markMultipleMessages };
 }

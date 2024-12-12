@@ -6,7 +6,11 @@ const formatDate = (date: string) => {
     hour: "2-digit",
     minute: "2-digit",
   };
-  return new Date(date).toLocaleString("ru-RU", options);
+
+  const adjustedDate = new Date(date);
+  adjustedDate.setHours(adjustedDate.getHours() + 4); // Добавляем 4 часа
+
+  return adjustedDate.toLocaleString("ru-RU", options);
 };
 
 export default formatDate;

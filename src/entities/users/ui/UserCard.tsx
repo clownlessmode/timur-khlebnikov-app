@@ -39,6 +39,7 @@ export const UserCard = ({ user }: Props) => {
   const { contactUser, isContactingUser } = useUsersController();
   const searchParams = new URLSearchParams({
     first_name: user.telegram.first_name || "",
+    last_name: user.telegram.last_name || "",
     username: user.telegram.username || "",
     name: user.name || "",
   }).toString();
@@ -60,6 +61,8 @@ export const UserCard = ({ user }: Props) => {
             }
             avatarText={firstWords(
               generateName({
+                last_name: user.telegram.last_name,
+
                 first_name: user.telegram.first_name,
                 username: user.telegram.username,
                 id: user.id,
@@ -70,6 +73,8 @@ export const UserCard = ({ user }: Props) => {
           <div className="flex flex-col">
             <h3 className="font-medium text-[16px]">
               {generateName({
+                last_name: user.telegram.last_name,
+
                 first_name: user.telegram.first_name,
                 username: user.telegram.username,
                 id: user.id,

@@ -109,6 +109,8 @@ const EditGroup = ({ group }: Props) => {
                   style={{ backgroundColor: generateColor(user.id) }}
                 >
                   {generateName({
+                    last_name: user.telegram.last_name,
+
                     first_name: user.telegram.first_name,
                     username: user.telegram.username,
                     id: user.id,

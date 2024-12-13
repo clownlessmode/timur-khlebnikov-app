@@ -140,7 +140,6 @@ const AddBroadcast = () => {
               <Input
                 className="h-13"
                 type="file"
-                multiple
                 onChange={(e) => {
                   onChange(e.target.files);
                 }}

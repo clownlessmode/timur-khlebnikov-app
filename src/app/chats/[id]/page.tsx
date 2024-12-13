@@ -23,6 +23,8 @@ export default function ChatPage({
 }) {
   const searchParams = useSearchParams();
   const first_name = searchParams?.get("first_name") ?? undefined;
+  const last_name = searchParams?.get("last_name") ?? undefined;
+
   const username = searchParams?.get("username") ?? undefined;
   const name = searchParams?.get("name") ?? null;
 
@@ -73,6 +75,7 @@ export default function ChatPage({
             }}
           >
             {generateName({
+              last_name: last_name,
               first_name: first_name,
               username: username,
               id: id,

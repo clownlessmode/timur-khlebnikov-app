@@ -36,6 +36,7 @@ const MessagesList = ({ data, isLoading, messages = [] }: Props) => {
       message={message}
       id={data.id}
       name={generateName({
+        last_name: data.telegram.last_name,
         first_name: data.telegram?.first_name,
         username: data.telegram?.username,
         id: data.id,

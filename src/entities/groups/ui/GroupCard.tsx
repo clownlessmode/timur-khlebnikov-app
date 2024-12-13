@@ -76,6 +76,7 @@ export const GroupCard = ({ group }: Props) => {
                     style={{ backgroundColor: generateColor(user.id) }}
                   ></div>
                   {generateName({
+                    last_name: user.telegram.last_name,
                     first_name: user.telegram.first_name,
                     username: user.telegram.username,
                     id: user.id,

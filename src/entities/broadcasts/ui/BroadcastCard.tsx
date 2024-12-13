@@ -30,6 +30,7 @@ export const BroadcastCard = ({ broadcast }: Props) => {
         className="flex items-center justify-between w-full text-left"
         onClick={() => setIsExpanded(!isExpanded)}
       >
+        {/* sss */}
         <div className="flex gap-2 items-center">
           {/* <UserAvatar hash={broadcast.id} status={false} text={""} /> */}
           <div className="flex flex-col">

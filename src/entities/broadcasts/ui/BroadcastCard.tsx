@@ -18,7 +18,7 @@ import DeleteBroadcast from "../../../features/broadcast/DeleteBroadcast";
 interface Props {
   broadcast: BroadcastEntity;
 }
-
+// sads
 export const BroadcastCard = ({ broadcast }: Props) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
